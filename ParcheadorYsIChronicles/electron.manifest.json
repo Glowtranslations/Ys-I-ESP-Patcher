@@ -1,0 +1,39 @@
+{
+  "executable": "ParcheadorYsIChronicles",
+  "splashscreen": {
+    "imageFile": ""
+  },
+  "name": "ParcheadorYsIChronicles",
+  "author": "GlowTranslations",
+  "singleInstance": true,
+  "environment": "Production",
+  "build": {
+    "appId": "com.ParcheadorYsIChronicles.app",
+    "productName": "ParcheadorYsIChronicles",
+    "copyright": "Copyright GlowTranslations © 2021",
+    "icon": "../../../icon.ico",
+    "buildVersion": "1.0.0",
+    "compression": "maximum",
+    "directories": {
+      "output": "../../../bin/Desktop"
+    },
+    "win": {
+      "target": "portable"
+    },
+    "extraResources": [
+      {
+        "from": "./bin",
+        "to": "bin",
+        "filter": [ "**/*" ]
+      }
+    ],
+    "files": [
+      {
+        "from": "./ElectronHostHook/node_modules",
+        "to": "ElectronHostHook/node_modules",
+        "filter": [ "**/*" ]
+      },
+      "**/*"
+    ]
+  }
+}

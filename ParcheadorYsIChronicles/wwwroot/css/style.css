@@ -1,0 +1,81 @@
+body {
+    background: url("../img/bg.png") fixed center no-repeat;
+    height: 100vh;
+    max-width: 100vw;
+    overflow-x: hidden;
+    background-attachment: fixed;
+    background-position: center center;
+    background-repeat: no-repeat;
+    background-color: #fff;
+    background-size: cover;
+}
+
+.modal-dialog {
+    color: black;
+}
+
+#logo {
+    height: 22vh;
+    margin-left: 15vw;
+    margin-top: 2vh;
+    margin-bottom: 2vh;
+}
+
+.logos > img {
+    height: 22vh;
+}
+
+.installBox {
+    background: url(../img/route.png) fixed center no-repeat transparent;
+    background-attachment: initial;
+    background-position: center center;
+    background-repeat: no-repeat;
+    background-size: contain;
+}
+
+.installButtons {
+    top: 12vh;
+    position: relative;
+}
+
+.creditsBox {
+    height: 32vh;
+    top: 18vh;
+    position: relative;
+    right: 2vw;
+}
+
+.examine {
+    width: 4vw;
+}
+
+
+.modalBox {
+    overflow: hidden;
+    color: white;
+    border: 4px #b3a18d groove;
+    background: url("../img/modal.png") fixed center no-repeat;
+    background-attachment: initial;
+    background-position: center center;
+    background-repeat: no-repeat;
+    background-color: #fff;
+    background-size: cover;
+}
+
+.modalTitle {
+    color: white;
+    font-size: 3vh;
+}
+
+.modalTitle > button {
+    color: white;
+
+}
+
+#feena {
+    text-align: right;
+    position: relative;
+    top: 16vh;
+    left: 4vw;
+    cursor: pointer;
+}

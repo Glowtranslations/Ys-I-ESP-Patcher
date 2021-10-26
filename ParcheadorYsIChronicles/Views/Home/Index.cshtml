@@ -1,0 +1,241 @@
+﻿@using ElectronNET.API
+@model Parcheador_Ys_I_Chronicles_.Controllers.HomeController
+
+@{
+    ViewBag.Title = "Parcheador Ys I Chronicles+";
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Parcheador Ys I Chronicles+</title>
+    <link rel="stylesheet" href="@Url.Content("~/css/bootstrap/bootstrap.min.css")" type="text/css" />
+    <link rel="stylesheet" href="@Url.Content("~/css/style.css")" type="text/css" />
+    <script>
+        let $ = require('jquery');
+        let jQuery = require('jquery');
+        require('popper.js');
+        require('bootstrap');
+    </script>
+</head>
+
+<body>
+<div style="display: none">
+    <audio autoplay loop id="audioBackground" volume="0.3">
+        <source src="@Url.Content("~/audio/background.mp3")" type="audio/mpeg"/>
+        Your browser does not support the audio element.
+    </audio>
+    <audio id="audioEnter" volume="0.3">
+        <source src="@Url.Content("~/audio/enter.ogg")" type="audio/ogg"/>
+        Your browser does not support the audio element.
+    </audio>
+    <audio id="audioFeena" volume="0.3">
+        <source src="@Url.Content("~/audio/feena.ogg")" type="audio/ogg"/>
+        Your browser does not support the audio element.
+    </audio>
+</div>
+
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-4">
+            <img id="logo" src="@Url.Content("~/img/ys.png")"/>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-3 logos" style="text-align: right; right: 2vw;">
+            <img src="@Url.Content("~/img/ts.png")"/>
+        </div>
+        <div class="col-3 logos" style="right: 2vw;">
+            <img src="@Url.Content("~/img/glow.png")"/>
+        </div>
+        <div class="col-6 installBox" style="right: 3vw; bottom: 8vh;">
+            <div class="container">
+                <div class="row installButtons">
+                    <div class="col-10">
+                        <input type="text" id="fileSelected" class="form-control" readonly style="margin-left: 1.5vw;"/>
+                    </div>
+                    <div class="col-2">
+                        <button type="button" id="fileSearch" class="btn btn-light examine">...</button>
+                    </div>
+                </div>
+                <div class="row installButtons" style="top: 22vh; right: 2vw;">
+                    <div class="col-4"></div>
+                    <div class="col-4">
+                        <img id="installButton" src="@Url.Content("~/img/btn_install.png")" style="height: 8vh;z-index: 99999;cursor: pointer;"/>
+                    </div>
+                    <div class="col-4"></div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-4"></div>
+        <div id="feena" class="col-1">
+        </div>
+        <div class="col-3"></div>
+        <div class="col-4" style="text-align: right; z-index: -1">
+            <img class="creditsBox" src="@Url.Content("~/img/credits.png")" />
+        </div>
+    </div>
+</div>
+
+
+<!-- Modal Info -->
+<div class="modal fade" id="infoWindow" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content modalBox">
+            <div class="modal-header modalTitle">
+                <h5 class="modal-title" id="infoTitle"></h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <span id="infoText"></span>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Success -->
+<div class="modal fade" id="successWindow" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content modalBox">
+            <div class="modal-header modalTitle">
+                <h5 class="modal-title">Parche aplicado correctamente.</h5>
+                <button type="button" class="close" aria-label="Close" onclick="closeWindow()">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <span>Se ha aplicado el parche, ¡disfruta del juego y de la traducción!</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal No internet -->
+<div class="modal fade" id="internetWindow" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content modalBox">
+            <div class="modal-header modalTitle">
+                <h5 class="modal-title">No hay internet.</h5>
+                <button type="button" class="close" aria-label="Close" onclick="noInternet()">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <span>Es necesario una conexión a internet para aplicar el parche. Se cerrará el programa.</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Progress -->
+<div class="modal fade" id="progressWindow" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content modalBox">
+            <div class="modal-header modalTitle">
+                <h5 class="modal-title" id="progressTitle"></h5>
+            </div>
+            <div class="modal-body">
+                <span class="text-center align-middle" id="progressText"></span>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    var installEnabled = false;
+    const { ipcRenderer } = require("electron");
+    $(document).ready(function () {
+
+       
+
+        $.ajax({ url: "@Html.Raw(@Url.Action("CheckInternet", "Home"))" }).done(function(data) {
+            if (!data.check) {
+                $("#internetWindow").modal('show');
+            }
+        });
+
+        $("#installButton").click(function () {
+            $("#audioEnter")[0].play();
+
+            if (!installEnabled)
+                return;
+
+            $("#progressWindow").modal('show');
+            $("#progressTitle").text("Descargando el parche.");
+            $("#progressText").text("Descargando, espere...");
+
+            $.ajax({ url: "@Html.Raw(@Url.Action("DownloadPatch", "Home"))" }).done(function(data) {
+                $("#progressTitle").text("Instalando la traducción.");
+                $("#progressText").text("Parcheando archivos, espere...");
+
+                $.ajax({ url: "@Html.Raw(@Url.Action("PatchGame", "Home"))" }).done(function(data) {
+                    $("#progressWindow").modal('hide');
+                    $("#successWindow").modal('show');
+                }).fail(function (data) {
+                    $("#progressWindow").modal('hide');
+                    $("#infoTitle").text("Error al parchear.");
+                    $("#infoText").text(data.responseJSON.detail);
+                    $("#infoWindow").modal('show');
+                });;
+
+
+            }).fail(function (data) {
+                $("#progressWindow").modal('hide');
+                $("#infoTitle").text("Error al descargar el parche.");
+                $("#infoText").text(data.responseJSON.detail);
+                $("#infoWindow").modal('show');
+            });
+        });
+
+        $("#feena").click(function () {
+            $("#audioFeena")[0].play();
+        });
+
+        $("#fileSearch").click(function (evt) {
+            $("#audioEnter")[0].play();
+            ipcRenderer.send("select-rom");
+        });
+
+        ipcRenderer.on("select-rom-reply",
+            (sender, path) => {
+                if (`${path}` === "undefined")
+                    return;
+
+                $("#fileSelected").val(`${path}`);
+                let url = "@Html.Raw(@Url.Action("CheckGame", "Home", new {file = "change"}))";
+                url = url.replace("change", `${path}`);
+
+                $.ajax({ url: url }).done(function(data) {
+                    installEnabled = true;
+                }).fail(function (data) {
+                    installEnabled = false;
+                    $("#infoTitle").text("Error al comprobar los archivos.");
+                    $("#infoText").text(data.responseJSON.detail);
+                    $("#infoWindow").modal('show');
+                });
+            });
+
+    });
+
+    function closeWindow() {
+        ipcRenderer.send("open-file");
+        $("body").addClass('fade-out');
+        setTimeout(() => { window.close(); }, 1000);
+    }
+
+    function noInternet() {
+        $("body").addClass('fade-out');
+        setTimeout(() => { window.close(); }, 1000);
+    }
+</script>
+</body>
+</html>
